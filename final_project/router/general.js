@@ -7,12 +7,17 @@ let bookList = JSON.parse(JSON.stringify(books, null, 4))
 
 public_users.post("/register", (req,res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    
+
+    users.push({"userName":req.query.userName,"password":req.query.password});
+    res.send({message: "Customer successfully registered. Now you can login"})
+
+//   return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
+  ///Write your code here
 
   return res.status(300).json({books: bookList});
 });
@@ -41,13 +46,21 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let a = req.params.title
+  
+  for (const [key, value] of Object.entries(bookList)) {
+    if (value["title"] == a){
+        return res.status(300).json(bookList[key]);
+    }
+  }
+  return res.status(300).json({message: "There is no book with that Title"});
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  
+  return res.status(300).json(bookList[req.params.isbn]["reviews"]);
 });
 
 module.exports.general = public_users;
