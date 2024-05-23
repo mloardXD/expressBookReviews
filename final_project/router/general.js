@@ -9,13 +9,19 @@ public_users.post("/register", (req,res) => {
   //Write your code here
   const username = req.body.username;
   const password = req.body.password;
+  if (username == ""){
+    return res.status(404).json({message: "No username given"});
+  }
+  if (password == ""){
+    return res.status(404).json({message: "No password given"});
+  }
   if (username && password) {
-    if (!doesExist(username)) {
+    if (!isValid(username)) {
       users.push({"username":username,"password":password});
       return res.status(200).json({message: "User successfully registred. Now you can login"});
     } else {
       return res.status(404).json({message: "User already exists!"});
-    }
+    } 
   }
   return res.status(404).json({message: "Unable to register user."});
 
@@ -29,11 +35,11 @@ public_users.get('/',function (req, res) {
 
   let myPromise = new Promise((resolve,reject) => {
     setTimeout(() => {
-      resolve("Promise resolved")
+        resolve(bookList)
     },1000)})
 
-    .then((successMessage) => {
-        return res.status(300).json({books: bookList});
+    .then((data) => {
+        return res.status(200).json({books: data});
       })
   
 });
@@ -43,11 +49,12 @@ public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here  
   let myPromise = new Promise((resolve,reject) => {
     setTimeout(() => {
-      resolve("Promise resolved")
+        let book = bookList[req.params.isbn]
+        resolve(book)
     },1000)})
 
-    .then((successMessage) => {
-        return res.status(300).json(bookList[req.params.isbn]);
+    .then((data) => {
+        return res.status(200).json(data);
       })
   
  });
@@ -56,20 +63,20 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
 
-  let a = req.params.author
-
   let myPromise = new Promise((resolve,reject) => {
     setTimeout(() => {
-      resolve("Promise resolved")
-    },1000)})
-
-    .then((successMessage) => {
+        let a = req.params.author
         for (const [key, value] of Object.entries(bookList)) {
             if (value["author"] == a){
-                return res.status(300).json(bookList[key]);
+                resolve(bookList[key]);
             }
           }
-          return res.status(300).json({message: "There is no book with that Author"});
+          resolve({message: "There is no book with that Author"});
+
+    },1000)})
+
+    .then((data) => {
+        return res.status(200).json(data);        
       })
   
   
@@ -80,21 +87,29 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  let a = req.params.title
-  
-  for (const [key, value] of Object.entries(bookList)) {
-    if (value["title"] == a){
-        return res.status(300).json(bookList[key]);
-    }
-  }
-  return res.status(300).json({message: "There is no book with that Title"});
+
+  let myPromise = new Promise((resolve,reject) => {
+    setTimeout(() => {
+        let a = req.params.title
+        for (const [key, value] of Object.entries(bookList)) {
+            if (value["title"] == a){
+                resolve(bookList[key]);
+            }
+          }
+          resolve({message: "There is no book with that Title"});
+
+    },1000)})
+
+    .then((data) => {
+        return res.status(200).json(data);
+      })  
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
   
-  return res.status(300).json(bookList[req.params.isbn]["reviews"]);
+  return res.status(200).json(bookList[req.params.isbn]["reviews"]);
 });
 
 module.exports.general = public_users;
